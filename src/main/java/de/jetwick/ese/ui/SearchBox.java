@@ -16,7 +16,6 @@
 package de.jetwick.ese.ui;
 
 import de.jetwick.ese.search.MyQuery;
-import java.util.Collection;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
@@ -78,14 +77,6 @@ public class SearchBox extends Panel {
     }
 
     protected void onSelectionChange(AjaxRequestTarget target, String str) {
-    }
-
-    protected Collection<String> getQueryChoices(String input) {
-        throw new RuntimeException();
-    }
-
-    protected Collection<String> getUserChoices(String input) {
-        throw new RuntimeException();
     }
 
     public PageParameters getParams(String tmpQuery) {

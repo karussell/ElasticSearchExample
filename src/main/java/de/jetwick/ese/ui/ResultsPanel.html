@@ -34,6 +34,7 @@
                     <div>
                         <div class="sorting">
                             Sort
+                            <a wicket:id="sortRelevance">relevance</a>
                             <a wicket:id="sortName">name</a>
                             <a wicket:id="sortLatest">latest</a>
                             <a wicket:id="sortOldest">oldest</a>
@@ -44,10 +45,11 @@
                     <li wicket:id="users" class="user">
                         <div class="userheader">                            
                             <div class="user-left">
-                                <div class="user-name" wicket:id="userNameLink" title="Search Elastic"/>                                
+                                <a target="_blank" class="user-name" wicket:id="userNameLink" title="Search Elastic">[userLink]</a>
                             </div>                            
+                            <span class="tweet-created" wicket:id="createdAt"/>
                         </div>                        
-                        <span class="user-bio" wicket:id="userBio"/>                                
+                        <span wicket:id="tweetText"/>                                
                     </li>
                 </ul>                
             </div>            

@@ -16,7 +16,7 @@
 package de.jetwick.ese.search;
 
 import org.elasticsearch.search.SearchHits;
-import de.jetwick.ese.domain.MyUser;
+import de.jetwick.ese.domain.MyTweet;
 import de.jetwick.ese.util.Helper;
 import org.elasticsearch.client.Requests;
 import java.io.IOException;
@@ -41,8 +41,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.*;
  */
 public class MySearch extends AbstractElasticSearch {
 
-    public static final String NAME = "name";
-    public static final String BIO = "bio";
+    public static final String NAME = "userName";
+    public static final String TWEET_TXT = "tweetText";
     public static final String CREATED_AT = "created_at";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -64,7 +64,7 @@ public class MySearch extends AbstractElasticSearch {
 
     @Override
     public String getIndexType() {
-        return "user";
+        return "tweet";
     }
 
     SearchResponse query(MyQuery query) {
@@ -72,14 +72,14 @@ public class MySearch extends AbstractElasticSearch {
                 execute().actionGet();
     }
 
-    public XContentBuilder createDoc(MyUser u) {
+    public XContentBuilder createDoc(MyTweet u) {
         try {
             XContentBuilder b = jsonBuilder().startObject();
-            b.field(BIO, u.getBio());
-            b.field("age", u.getAge());
+            b.field(TWEET_TXT, u.getText());
+            b.field("fromUserId", u.getFromUserId());
             if (u.getCreatedAt() != null)
                 b.field(CREATED_AT, u.getCreatedAt());
-            b.field(NAME, u.getName());
+            b.field(NAME, u.getUserName());
             b.endObject();
             return b;
         } catch (IOException ex) {
@@ -87,7 +87,7 @@ public class MySearch extends AbstractElasticSearch {
         }
     }
 
-    public MyUser readDoc(Map<String, Object> source, String idAsStr) {
+    public MyTweet readDoc(Map<String, Object> source, String idAsStr) {
         // if we use in mapping: "_source" : {"enabled" : false}
         // we need to include all fields in query to use doc.getFields() 
         // instead of doc.getSource()
@@ -99,15 +99,16 @@ public class MySearch extends AbstractElasticSearch {
         } catch (Exception ex) {
             logger.error("Couldn't parse id:" + idAsStr);
         }
-        MyUser user = new MyUser(id, name);
-        user.setBio((String) source.get(BIO));
-        user.setCreatedAt(Helper.toDateNoNPE((String) source.get(CREATED_AT)));
+        MyTweet tweet = new MyTweet(id, name);
+        tweet.setText((String) source.get(TWEET_TXT));
+        tweet.setCreatedAt(Helper.toDateNoNPE((String) source.get(CREATED_AT)));
+        tweet.setFromUserId((Integer) source.get("fromUserId"));
 
-        return user;
+        return tweet;
     }
 
-    public Collection<MyUser> search(String str) {
-        List<MyUser> user = new ArrayList<MyUser>();
+    public Collection<MyTweet> search(String str) {
+        List<MyTweet> user = new ArrayList<MyTweet>();
         search(user, new MyQuery().setQueryString(str));
         return user;
     }
@@ -116,23 +117,23 @@ public class MySearch extends AbstractElasticSearch {
         return search(new ArrayList(), request);
     }
 
-    public SearchResponse search(Collection<MyUser> users, MyQuery request) {
+    public SearchResponse search(Collection<MyTweet> users, MyQuery request) {
         SearchResponse rsp = query(request);
         SearchHit[] docs = rsp.getHits().getHits();
         for (SearchHit sd : docs) {
 //            System.out.println(sd.getExplanation().toString());
-            MyUser u = readDoc(sd.getSource(), sd.getId());
+            MyTweet u = readDoc(sd.getSource(), sd.getId());
             users.add(u);
         }
 
         return rsp;
     }
 
-    void update(MyUser user, boolean refresh) {
+    void update(MyTweet tweet, boolean refresh) {
         try {
-            XContentBuilder b = createDoc(user);
+            XContentBuilder b = createDoc(tweet);
             if (b != null)
-                feedDoc(Long.toString(user.getId()), b);
+                feedDoc(Long.toString(tweet.getId()), b);
 
             if (refresh)
                 refresh();
@@ -141,12 +142,12 @@ public class MySearch extends AbstractElasticSearch {
         }
     }
 
-    public void bulkUpdate(Collection<MyUser> users, String indexName) {
+    public void bulkUpdate(Collection<MyTweet> tweets, String indexName) {
         // now using bulk API instead of feeding each doc separate with feedDoc
         BulkRequestBuilder brb = client.prepareBulk();
-        for (MyUser user : users) {
-            String id = Long.toString(user.getId());
-            XContentBuilder source = createDoc(user);
+        for (MyTweet tweet : tweets) {
+            String id = Long.toString(tweet.getId());
+            XContentBuilder source = createDoc(tweet);
             brb.add(Requests.indexRequest(indexName).type(getIndexType()).id(id).source(source));
         }
         if (brb.numberOfActions() > 0) {
@@ -155,7 +156,7 @@ public class MySearch extends AbstractElasticSearch {
         }
     }
 
-    public MyUser findById(Long twitterId) {
+    public MyTweet findById(Long twitterId) {
         try {
             GetResponse rsp = client.prepareGet(getIndexName(), getIndexType(), "" + twitterId).
                     execute().actionGet();
@@ -165,10 +166,10 @@ public class MySearch extends AbstractElasticSearch {
         }
     }
 
-    public MyUser findByName(String uName) {
+    public MyTweet findByName(String uName) {
         try {
-            List<MyUser> list = new ArrayList<MyUser>();
-            search(list, new MyQuery().addFilter("user", uName));
+            List<MyTweet> list = new ArrayList<MyTweet>();
+            search(list, new MyQuery().addFilter(NAME, uName));
 
             if (list.isEmpty())
                 return null;
@@ -198,9 +199,9 @@ public class MySearch extends AbstractElasticSearch {
             refresh(intoIndex);
     }
 
-    public List<MyUser> collectTweets(SearchResponse rsp) {
+    public List<MyTweet> collectTweets(SearchResponse rsp) {
         SearchHits docs = rsp.getHits();
-        List<MyUser> list = new ArrayList<MyUser>();
+        List<MyTweet> list = new ArrayList<MyTweet>();
         for (SearchHit sd : docs) {
             list.add(readDoc(sd.getSource(), sd.getId()));
         }

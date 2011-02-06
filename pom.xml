@@ -29,7 +29,14 @@
         </license>
     </licenses>
 
-    <dependencies>       
+    <dependencies>     
+        <!-- to feed some data -->
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>2.1.11</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>

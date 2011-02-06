@@ -17,7 +17,7 @@ package de.jetwick.ese.ui;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import de.jetwick.ese.domain.MyUser;
+import de.jetwick.ese.domain.MyTweet;
 import de.jetwick.ese.search.MyQuery;
 import de.jetwick.ese.search.MySearch;
 import java.io.Serializable;
@@ -151,10 +151,10 @@ public class HomePage extends WebPage {
 
         long start = System.currentTimeMillis();
         long totalHits = 0;
-        List<MyUser> users = new ArrayList<MyUser>();
+        List<MyTweet> tweets = new ArrayList<MyTweet>();
         SearchResponse rsp = null;
         try {
-            rsp = getSearch().search(users, query);
+            rsp = getSearch().search(tweets, query);
             totalHits = rsp.getHits().getTotalHits();
             logger.info(addIP("[stats] " + totalHits + " hits for: " + query.toString()));
         } catch (Exception ex) {
@@ -168,7 +168,7 @@ public class HomePage extends WebPage {
             time = Math.round(time) / 10f;
             msg = "Found " + totalHits + " users in " + time + " s";
         } else {
-            if (users.isEmpty()) {
+            if (tweets.isEmpty()) {
                 if (!msg.isEmpty())
                     msg = " " + msg;
                 msg = "Sorry, nothing found" + msg + ".";
@@ -179,8 +179,8 @@ public class HomePage extends WebPage {
         resultsPanel.setQuery(queryString);
         resultsPanel.setHitsPerPage(hitsPerPage);
         resultsPanel.setSort(query.getSort());
-        for (MyUser user : users) {
-            resultsPanel.add(user);
+        for (MyTweet tweet : tweets) {
+            resultsPanel.add(tweet);
         }
 
 //        navigationPanel.setPage(page);

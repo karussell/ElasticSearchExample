@@ -15,7 +15,7 @@
  */
 package de.jetwick.ese.ui;
 
-import de.jetwick.ese.domain.MyUser;
+import de.jetwick.ese.domain.MyTweet;
 import de.jetwick.ese.search.MySearch;
 import de.jetwick.ese.util.Helper;
 import java.io.Serializable;
@@ -25,6 +25,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -41,7 +42,7 @@ public class ResultsPanel extends Panel {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private ListView userView;
-    private List<MyUser> users = new ArrayList<MyUser>();
+    private List<MyTweet> tweets = new ArrayList<MyTweet>();
     private String queryMessage;
     private String queryMessageWarn;
     private String query;
@@ -60,27 +61,22 @@ public class ResultsPanel extends Panel {
             }
         });
 
-        add(createSortLink("sortName", MySearch.NAME + " desc"));
+        add(createSortLink("sortRelevance", ""));
+        add(createSortLink("sortName", MySearch.NAME + " asc"));
         add(createSortLink("sortLatest", MySearch.CREATED_AT + " desc"));
         add(createSortLink("sortOldest", MySearch.CREATED_AT + " asc"));
 
-        userView = new ListView("users", users) {
+        userView = new ListView("users", tweets) {
 
             @Override
             public void populateItem(final ListItem item) {
-                final MyUser user = (MyUser) item.getModelObject();
-                String twitterUrl = Helper.TURL + "/" + user.getName();
-
-                String name = user.getName();
-                LabeledLink userNameLink = new LabeledLink("userNameLink", name, false) {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        onUserClick(user.getName(), null);
-                    }
-                };
+                final MyTweet tweet = (MyTweet) item.getModelObject();
+                String twitterUrl = Helper.TURL + "/" + tweet.getUserName();
+                
+                ExternalLink userNameLink = new ExternalLink("userNameLink", twitterUrl, tweet.getUserName());
                 item.add(userNameLink);
-                item.add(new Label("userBio", user.getBio()));
+                item.add(new Label("tweetText", tweet.getText()));
+                item.add(new Label("createdAt", Helper.toLocalDateTime(tweet.getCreatedAt())));
             }
         };
 
@@ -94,7 +90,7 @@ public class ResultsPanel extends Panel {
     }
 
     public void clear() {
-        users.clear();
+        tweets.clear();
         queryMessage = "";
         queryMessageWarn = "";
     }
@@ -107,8 +103,8 @@ public class ResultsPanel extends Panel {
         this.queryMessageWarn = queryMessageWarn;
     }
 
-    public void add(MyUser u) {
-        users.add(u);
+    public void add(MyTweet u) {
+        tweets.add(u);
     }
 
     public void setQuery(String visibleString) {

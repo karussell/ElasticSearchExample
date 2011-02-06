@@ -25,6 +25,7 @@ import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.xcontent.QueryBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 /**
@@ -56,14 +57,24 @@ public class MyQuery implements Serializable {
 
         if (!Helper.isEmpty(queryString)) {
             qb = QueryBuilders.queryString(queryString).defaultOperator(Operator.AND).
-                    field(MySearch.BIO).field(MySearch.NAME, 0).
+                    field(MySearch.TWEET_TXT).field(MySearch.NAME, 0).
                     allowLeadingWildcard(false).analyzer(getDefaultAnalyzer()).useDisMax(true);
         } else {
             qb = QueryBuilders.matchAllQuery();
         }
 
-        // TODO set page, filters, sort, ...
-
+        // TODO set page, filters, ...
+        
+        if(!Helper.isEmpty(sort)) {
+            String[] sorts = sort.split(" ");
+            if(sorts.length == 2) {
+                if("desc".equalsIgnoreCase(sorts[1]))
+                    builder.addSort(sorts[0], SortOrder.DESC);
+                else
+                    builder.addSort(sorts[0], SortOrder.ASC);
+            }
+        }
+                
         builder.setQuery(qb);
         return builder;
     }

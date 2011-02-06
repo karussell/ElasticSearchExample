@@ -18,12 +18,20 @@ package de.jetwick.ese.search;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import de.jetwick.ese.domain.MyUser;
+import de.jetwick.ese.domain.MyTweet;
 import de.jetwick.ese.util.DefaultModule;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import org.elasticsearch.common.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import twitter4j.Query;
+import twitter4j.Tweet;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
 
 /**
  *
@@ -32,25 +40,27 @@ import java.util.Random;
 public class Feeding {
 
     public static void main(String[] args) {
-        new Feeding().start();
+        new Feeding().start(false);
     }
     private Random rand = new Random();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public void start() {
+    public void start(boolean fake) {
         Module module = new DefaultModule();
         Injector injector = Guice.createInjector(module);
         MySearch tws = injector.getInstance(MySearch.class);
+        Collection<MyTweet> tweets;
+        if (fake)
+            tweets = createFake();
+        else
+            tweets = createReal();
 
-        List<MyUser> users = new ArrayList<MyUser>();
-        for (int i = 0; i < 1000; i++) {
-            MyUser u = new MyUser(i, "peter " + i);
-            u.setAge(i % 100);
-            u.setCreatedAt(new Date(i));
-            u.setBio(createRandomWord(4) + " test " + createRandomWord(10));
-            users.add(u);
-        }
-        tws.bulkUpdate(users, tws.getIndexName());
-        System.out.println("Feeded " + users.size() + " users.");
+        StopWatch sw = new StopWatch().start();
+        tws.bulkUpdate(tweets, tws.getIndexName());
+        long time = sw.stop().totalTime().seconds();
+        if (time == 0)
+            time = 1;
+        System.out.println("Feeded " + tweets.size() + " users => " + tweets.size() / time + " users/sec");
     }
 
     String createRandomWord(int chars) {
@@ -59,5 +69,38 @@ public class Feeding {
             word = word + (char) (rand.nextInt(58) + 65);
         }
         return word;
+    }
+
+    public Collection<MyTweet> createFake() {
+        List<MyTweet> tweets = new ArrayList<MyTweet>();
+        int MAX = 20000;
+        for (int i = 0; i < MAX; i++) {
+            MyTweet tweet = new MyTweet(i, "peter " + i);
+            tweet.setFromUserId(i % 100);
+            tweet.setCreatedAt(new Date(i));
+            tweet.setText(createRandomWord(4) + " test " + createRandomWord(10));
+            tweets.add(tweet);
+        }
+        return tweets;
+    }
+
+    public Collection<MyTweet> createReal() {
+        List<MyTweet> tweets = new ArrayList<MyTweet>();
+        try {
+            Twitter twitter4j = new TwitterFactory().getInstance();
+            Query q = new Query("java");
+            q.setRpp(100);
+            for (Tweet tw : twitter4j.search(q).getTweets()) {
+                MyTweet myTw = new MyTweet(tw.getId(), tw.getFromUser());
+                myTw.setText(tw.getText());
+                myTw.setCreatedAt(tw.getCreatedAt());
+                myTw.setFromUserId(tw.getFromUserId());
+                tweets.add(myTw);
+            }
+        } catch (Exception ex) {
+            logger.error("Error while grabbing tweets from twitter!", ex);
+        }
+
+        return tweets;
     }
 }

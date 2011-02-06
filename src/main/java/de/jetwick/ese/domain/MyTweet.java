@@ -22,37 +22,37 @@ import java.util.Date;
  *
  * @author Peter Karich, peat_hal 'at' users 'dot' sourceforge 'dot' net
  */
-public class MyUser implements Serializable {
+public class MyTweet implements Serializable {
 
     private long id;
-    private String bio;
+    private String text;
     private Date createdAt;
-    private String name;
-    private int age;
+    private String userName;
+    private int fromUserId;
 
-    public MyUser(long id, String name) {
+    public MyTweet(long id, String userName) {
         this.id = id;
-        this.name = name;
+        this.userName = userName;
     }
 
     public long getId() {
         return id;
     }
 
-    public int getAge() {
-        return age;
+    public int getFromUserId() {
+        return fromUserId;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setFromUserId(int userId) {
+        this.fromUserId = userId;
     }
 
-    public String getBio() {
-        return bio;
+    public String getText() {
+        return text;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setText(String bio) {
+        this.text = bio;
     }
 
     public Date getCreatedAt() {
@@ -63,11 +63,11 @@ public class MyUser implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String name) {
+        this.userName = name;
     }        
 }

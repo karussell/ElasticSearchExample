@@ -1,0 +1,7 @@
+{    
+    "tweet" : {
+        "properties" : {
+            "userName": { "type" : "string", "index" : "not_analyzed" }           
+        }
+    }
+}

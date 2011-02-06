@@ -1,0 +1,71 @@
+#main {
+    padding-top: 20px;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.subtitle {        
+    color: black;
+    font-style: italic;
+    font-size: 17px;    
+    padding: 15px 0px 10px 20px;
+}
+
+
+#resultslist {    
+    padding-left: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 25px;
+    border-bottom: gray 1px groove;
+}
+
+#resultslist ul {
+    padding-left: 0px; 
+    margin: 0px;
+}
+#resultslist .users {
+    margin: 0px;
+}
+
+#resultslist-header {
+    min-height: 40px;
+    font-size: 0.8em;    
+    border-bottom: 1px solid gray;        
+}
+
+#resultslist-header .sorting {    
+    float: right;    
+}
+#resultslist-footer {    
+    padding: 4px;
+}
+
+.users {
+    padding-top: 10px;
+}
+
+.users li { list-style: none; }
+.user {
+    padding: 10px;
+}
+.user-name {     
+    font-weight: bold; font-size: 0.8em; 
+}
+
+.user-name {
+    padding: 0 0 0 0;
+}
+
+.user-name a span {            
+    padding-right: 5px;    
+}
+.tweet-created {
+    font-size: 9px;
+    color: gray;
+}
+
+.sorting .selected, .hitsPerPage .selected  {
+    font-weight: bold;
+}

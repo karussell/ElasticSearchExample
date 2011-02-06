@@ -1,9 +1,0 @@
-{    
-    "user" : {
-        "properties" : {
-            "name": { "type" : "string", "index" : "not_analyzed" },
-            "tag": { "type" : "string", "index" : "not_analyzed" },        
-            "webUrl": { "type" : "string", "index" : "not_analyzed" }            
-        }
-    }
-}
