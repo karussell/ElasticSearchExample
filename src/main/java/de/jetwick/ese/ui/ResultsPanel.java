@@ -20,15 +20,11 @@ import de.jetwick.ese.search.MySearch;
 import de.jetwick.ese.util.Helper;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -48,9 +44,9 @@ public class ResultsPanel extends Panel {
     private List<MyUser> users = new ArrayList<MyUser>();
     private String queryMessage;
     private String queryMessageWarn;
-    private String query;        
+    private String query;
     private String sort;
-    private int hitsPerPage;        
+    private int hitsPerPage;
 
     public ResultsPanel(String id) {
         super(id);
@@ -63,7 +59,7 @@ public class ResultsPanel extends Panel {
                 return queryMessageWarn != null && queryMessageWarn.length() > 0;
             }
         });
-        
+
         add(createSortLink("sortName", MySearch.NAME + " desc"));
         add(createSortLink("sortLatest", MySearch.CREATED_AT + " desc"));
         add(createSortLink("sortOldest", MySearch.CREATED_AT + " asc"));
@@ -84,6 +80,7 @@ public class ResultsPanel extends Panel {
                     }
                 };
                 item.add(userNameLink);
+                item.add(new Label("userBio", user.getBio()));
             }
         };
 
@@ -115,7 +112,7 @@ public class ResultsPanel extends Panel {
     }
 
     public void setQuery(String visibleString) {
-        query = visibleString;        
+        query = visibleString;
     }
 
     public void setHitsPerPage(int hits) {

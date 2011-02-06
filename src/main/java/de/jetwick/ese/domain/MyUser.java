@@ -15,13 +15,14 @@
  */
 package de.jetwick.ese.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author Peter Karich, peat_hal 'at' users 'dot' sourceforge 'dot' net
  */
-public class MyUser {
+public class MyUser implements Serializable {
 
     private long id;
     private String bio;

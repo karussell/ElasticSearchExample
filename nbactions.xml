@@ -8,6 +8,7 @@
             </goals>
             <properties>
                 <skipTests>true</skipTests>
+                <Env.MAVEN_OPTS>-Xms512m -Xmx512m -XX:PermSize=512m -XX:MaxPermSize=512m</Env.MAVEN_OPTS>
             </properties>
         </action>
     </actions>

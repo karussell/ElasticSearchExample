@@ -55,7 +55,7 @@ public class HomePage extends WebPage {
     }
 
     public HomePage(final PageParameters parameters) {
-        init(createQuery(parameters), parameters, 0, true);
+        init(createQuery(parameters), parameters, 0);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class HomePage extends WebPage {
         }
     }
 
-    public void init(MyQuery query, PageParameters parameters, int page, boolean twitterFallback) {
+    public void init(MyQuery query, PageParameters parameters, int page) {
         setStatelessHint(true);
         feedbackPanel = new FeedbackPanel("feedback");
         add(feedbackPanel.setOutputMarkupId(true));
