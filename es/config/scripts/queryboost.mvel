@@ -1,0 +1,20 @@
+boost = 1;
+
+//http://wiki.apache.org/solr/FunctionQuery
+//map(tw_i,0,30,0,2)
+//tweetLength = doc['tw_i'].value;
+//if(tweetLength <= 30)
+//    boost *= 0;
+//else
+//    boost *= 2;
+
+boost *= doc['retw_i'].value <= 100 ? doc['retw_i'].value : 100;
+
+//date = doc['dt'].value;
+//boost *= 100 /(10.0e-8 * (mynow - date) + 1);
+
+//quality = doc['quality_i'].value;
+//if(quality <= 65)
+//    boost = 0;
+//else
+//    boost *= 30;
