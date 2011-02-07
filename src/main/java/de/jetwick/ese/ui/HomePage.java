@@ -47,6 +47,7 @@ public class HomePage extends WebPage {
     private FeedbackPanel feedbackPanel;
     private ResultsPanel resultsPanel;
     private SearchBox searchBox;
+    private FacetPanel facetPanel;
     @Inject
     private Provider<MySearch> searchProvider;
 
@@ -87,6 +88,7 @@ public class HomePage extends WebPage {
 
     public void updateAfterAjax(AjaxRequestTarget target, boolean updateSearchBox) {
         if (target != null) {
+            target.addComponent(facetPanel);
             target.addComponent(resultsPanel);
             if (updateSearchBox)
                 target.addComponent(searchBox);
@@ -128,6 +130,26 @@ public class HomePage extends WebPage {
 
         searchBox = new SearchBox("searchbox");
         add(searchBox.setOutputMarkupId(true));
+        
+        facetPanel = new FacetPanel("filterPanel") {
+
+            @Override
+            public void onFacetChange(AjaxRequestTarget target, String filter, Object val, boolean selected) {
+                if (lastQuery != null) {                    
+                    lastQuery.changeFilter(filter, val, selected);
+                } else {
+                    logger.error("last query cannot be null but was! ... when clicking on facets!?");
+                    return;
+                }
+
+                doOldSearch(0);
+                updateAfterAjax(target, false);
+            }            
+        };
+        add(facetPanel.setOutputMarkupId(true));
+        
+        query.enableFacets();
+        
         doSearch(query, page);
     }
 
@@ -183,6 +205,7 @@ public class HomePage extends WebPage {
             resultsPanel.add(tweet);
         }
 
+        facetPanel.update(rsp, query);
 //        navigationPanel.setPage(page);
 //        navigationPanel.setHits(totalHits);
 //        navigationPanel.setHitsPerPage(hitsPerPage);

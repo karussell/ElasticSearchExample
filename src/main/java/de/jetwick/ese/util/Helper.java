@@ -175,7 +175,7 @@ public class Helper {
 
     public static String getFileUnderHome(String str) {
         char c = File.separatorChar;
-        String appHome = System.getProperty("user.home") + c + ".jetwick";
+        String appHome = System.getProperty("user.home") + c + ".es-example";
         File f = new File(appHome);
         if (!f.exists())
             f.mkdir();
@@ -245,14 +245,6 @@ public class Helper {
 
     public static String toTwitterLink(String title, String url) {
         return toLink(title, TURL + "/" + url);
-    }
-
-    public static String toJetwickUser(String title, String user) {
-        return toInternLink(title, JURL + "?user=" + user);
-    }
-
-    public static String toJetwickSearch(String title, String q) {
-        return toInternLink(title, JURL + "?q=" + q);
     }
 
     public static String toInternLink(String title, String url) {

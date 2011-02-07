@@ -15,16 +15,26 @@
  */
 package de.jetwick.ese.search;
 
+import org.elasticsearch.index.query.xcontent.FilterBuilders;
+import org.elasticsearch.index.query.xcontent.XContentFilterBuilder;
+import java.util.Set;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Map;
 import org.elasticsearch.index.query.xcontent.QueryStringQueryBuilder.Operator;
 import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
 import de.jetwick.ese.util.Helper;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.xcontent.QueryBuilders;
+import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
@@ -37,6 +47,7 @@ public class MyQuery implements Serializable {
     private String queryString = "";
     private String sort = "";
     private Map<String, Object> filters = new LinkedHashMap<String, Object>();
+    private Set<String> termFacets = new LinkedHashSet<String>();
     private int page;
     private int hitsPerPage;
 
@@ -63,24 +74,55 @@ public class MyQuery implements Serializable {
             qb = QueryBuilders.matchAllQuery();
         }
 
-        // TODO set page, filters, ...
-        
-        if(!Helper.isEmpty(sort)) {
+        if (!Helper.isEmpty(sort)) {
             String[] sorts = sort.split(" ");
-            if(sorts.length == 2) {
-                if("desc".equalsIgnoreCase(sorts[1]))
+            if (sorts.length == 2) {
+                if ("desc".equalsIgnoreCase(sorts[1]))
                     builder.addSort(sorts[0], SortOrder.DESC);
                 else
                     builder.addSort(sorts[0], SortOrder.ASC);
             }
         }
-                
+
+        for (String tf : termFacets) {
+            builder.addFacet(FacetBuilders.termsFacet(tf).field(tf));
+        }
+
+        XContentFilterBuilder fb = null;
+        for (Entry<String, Object> e : filters.entrySet()) {
+            XContentFilterBuilder tmp = FilterBuilders.termFilter(e.getKey(), e.getValue());
+            if (fb != null)
+                fb = FilterBuilders.andFilter(fb, tmp);
+            else
+                fb = tmp;
+        }
+
+        if (fb != null)
+            qb = QueryBuilders.filteredQuery(qb, fb);
+
+        builder.setFrom(page * hitsPerPage).setSize(hitsPerPage);
         builder.setQuery(qb);
         return builder;
     }
 
     public MyQuery addFilter(String key, Object val) {
         filters.put(key, val);
+        return this;
+    }
+
+    public Collection<String> getFilters() {
+        if (filters.isEmpty())
+            return Collections.EMPTY_LIST;
+
+        List<String> ret = new ArrayList<String>();
+        for (Entry<String, Object> e : filters.entrySet()) {
+            ret.add(e.getKey() + ":" + e.getValue().toString());
+        }
+        return ret;
+    }
+
+    public MyQuery addTermFacet(String field) {
+        termFacets.add(field);
         return this;
     }
 
@@ -113,6 +155,18 @@ public class MyQuery implements Serializable {
 
     @Override
     public String toString() {
-        return "q=" + queryString;
-    }        
+        return "q=" + queryString + " filter:" + filters + " facets:" + termFacets;
+    }
+
+    public void enableFacets() {
+        termFacets.add(MySearch.NAME);
+    }
+
+    public void changeFilter(String filter, Object val, boolean selected) {
+        if (selected) {
+            filters.remove(filter);
+        } else {
+            filters.put(filter, val);
+        }
+    }
 }

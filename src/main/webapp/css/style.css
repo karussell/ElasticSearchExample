@@ -1,8 +1,11 @@
 #main {
-    padding-top: 20px;
     width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.left-column {
+    float: left;
 }
 
 .subtitle {        
@@ -34,10 +37,10 @@
     font-size: 0.8em;    
     border-bottom: 1px solid gray;        
 }
-
+/*
 #resultslist-header .sorting {    
     float: right;    
-}
+}*/
 #resultslist-footer {    
     padding: 4px;
 }
@@ -68,4 +71,28 @@
 
 .sorting .selected, .hitsPerPage .selected  {
     font-weight: bold;
+}
+
+.filter {
+    width: 145px;
+    margin-top: 0px;
+    padding: 130px 15px 0px 10px;
+}
+
+.filter-rm { font-weight: bold }
+.filter .filter-count {
+    font-size: 0.7em;
+    color: gray
+}
+.filter ul { margin-top: 0px; padding-top: 5px; padding-left: 5px; }
+
+.filter-names { padding-bottom: 15px;}
+.filter-names ul li { font-size: 0.9em; }
+.filter-names ul li span.gray { color: gray; }
+
+.filter li { list-style: none; }
+
+.content {
+    float: left;
+    width: 330px;
 }

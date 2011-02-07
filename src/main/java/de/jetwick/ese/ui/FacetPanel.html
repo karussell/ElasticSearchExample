@@ -20,22 +20,25 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
       xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
-    <head>        
-        <title wicket:id="title">ElasticExample</title>        
-        <link rel="stylesheet" type="text/css" href="css/style.css"/>      
+    <head>
+        <title>[Panel Test]</title>
     </head>
-    <body>        
-        <div id="main">
-            <div class="feedback" wicket:id="feedback">
-            </div>                        
-            <div class="left-column">
-                <div wicket:id="filterPanel">[facets]</div>
+    <body>
+        <wicket:panel>            
+            <div class="filter">
+                <ul>
+                    <li class="filter-names" wicket:id="filterNames">
+                        <div wicket:id="filterName">[Filter]</div>
+                        <ul>
+                            <li wicket:id="filterValues">                                
+                                <a wicket:id="filterValueLink"><span wicket:id="filterValue">[filter value]</span></a>
+                                <span class="filter-count" wicket:id="filterCount">[count]</span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
-            <div class="content">                               
-                <div wicket:id="searchbox">[searchbox]</div>
-                <div wicket:id="results">[results]</div>
-            </div>           
-        </div>
+        </wicket:panel>
     </body>
 </html>
 
