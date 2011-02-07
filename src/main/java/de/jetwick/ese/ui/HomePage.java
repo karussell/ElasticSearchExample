@@ -43,7 +43,7 @@ public class HomePage extends WebPage {
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private MyQuery lastQuery;
-    private int hitsPerPage = 10;
+    private int hitsPerPage = 15;
     private FeedbackPanel feedbackPanel;
     private ResultsPanel resultsPanel;
     private SearchBox searchBox;
@@ -109,7 +109,7 @@ public class HomePage extends WebPage {
                     str += searchBox.getQuery() + " ";
 
                 if (str.isEmpty())
-                    return "Example Search";
+                    return "ElasticSearch Example";
 
                 return "ElasticSearch Example | " + str + "| You know for search!";
             }

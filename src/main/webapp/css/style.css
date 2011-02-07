@@ -8,15 +8,20 @@
     float: left;
 }
 
-.subtitle {        
+.jetwicklogo .subtitle {        
     color: black;
     font-style: italic;
     font-size: 17px;    
-    padding: 15px 0px 10px 20px;    
+    padding: 15px 0px 10px 20px;        
 }
 
 .jetwicklogo a {
-    text-decoration: none;
+    text-decoration: none;    
+}
+.jetwicklogo img {
+    width: 50px;
+    float: left;
+    border: none;
 }
 
 .search-tweet-tf { 

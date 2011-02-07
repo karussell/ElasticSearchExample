@@ -121,6 +121,19 @@ public class MyQuery implements Serializable {
         return ret;
     }
 
+    public void changeFilter(String filter, Object val, boolean selected) {
+        if (selected) {
+            filters.remove(filter);
+        } else {
+            filters.put(filter, val);
+        }
+    }
+
+    public void enableFacets() {
+        // add more default facets 'HERE'
+        termFacets.add(MySearch.NAME);
+    }
+
     public MyQuery addTermFacet(String field) {
         termFacets.add(field);
         return this;
@@ -156,17 +169,5 @@ public class MyQuery implements Serializable {
     @Override
     public String toString() {
         return "q=" + queryString + " filter:" + filters + " facets:" + termFacets;
-    }
-
-    public void enableFacets() {
-        termFacets.add(MySearch.NAME);
-    }
-
-    public void changeFilter(String filter, Object val, boolean selected) {
-        if (selected) {
-            filters.remove(filter);
-        } else {
-            filters.put(filter, val);
-        }
     }
 }

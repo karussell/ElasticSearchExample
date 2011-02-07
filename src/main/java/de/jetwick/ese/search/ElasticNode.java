@@ -91,6 +91,7 @@ public class ElasticNode {
         }
 
         node = nBuilder.build().start();
+        
         started = true;
         logger.info("Started Node in cluster " + CLUSTER + ". Home folder: " + homeDir.getAbsolutePath());
         return this;

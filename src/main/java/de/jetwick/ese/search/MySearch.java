@@ -15,6 +15,7 @@
  */
 package de.jetwick.ese.search;
 
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.SearchHits;
 import de.jetwick.ese.domain.MyTweet;
 import de.jetwick.ese.util.Helper;
@@ -28,6 +29,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
@@ -68,8 +70,10 @@ public class MySearch extends AbstractElasticSearch {
     }
 
     SearchResponse query(MyQuery query) {
-        return query.initRequestBuilder(client.prepareSearch(getIndexName())).
-                execute().actionGet();
+        SearchRequestBuilder builder = client.prepareSearch(getIndexName());
+        // merge results from shards:
+        builder.setSearchType(SearchType.QUERY_THEN_FETCH);
+        return query.initRequestBuilder(builder).execute().actionGet();
     }
 
     public XContentBuilder createDoc(MyTweet u) {
@@ -87,25 +91,25 @@ public class MySearch extends AbstractElasticSearch {
         }
     }
 
-    public MyTweet readDoc(Map<String, Object> source, String idAsStr) {
-        // if we use in mapping: "_source" : {"enabled" : false}
-        // we need to include all fields in query to use doc.getFields() 
-        // instead of doc.getSource()
+public MyTweet readDoc(Map<String, Object> source, String idAsStr) {
+    // if we use in mapping: "_source" : {"enabled" : false}
+    // we need to include all necessary fields in query and then to use doc.getFields() 
+    // instead of doc.getSource()
 
-        String name = (String) source.get(NAME);
-        long id = -1;
-        try {
-            id = Long.parseLong(idAsStr);
-        } catch (Exception ex) {
-            logger.error("Couldn't parse id:" + idAsStr);
-        }
-        MyTweet tweet = new MyTweet(id, name);
-        tweet.setText((String) source.get(TWEET_TXT));
-        tweet.setCreatedAt(Helper.toDateNoNPE((String) source.get(CREATED_AT)));
-        tweet.setFromUserId((Integer) source.get("fromUserId"));
-
-        return tweet;
+    String name = (String) source.get(NAME);
+    long id = -1;
+    try {
+        id = Long.parseLong(idAsStr);
+    } catch (Exception ex) {
+        logger.error("Couldn't parse id:" + idAsStr);
     }
+    MyTweet tweet = new MyTweet(id, name);
+    tweet.setText((String) source.get(TWEET_TXT));
+    tweet.setCreatedAt(Helper.toDateNoNPE((String) source.get(CREATED_AT)));
+    tweet.setFromUserId((Integer) source.get("fromUserId"));
+
+    return tweet;
+}
 
     public Collection<MyTweet> search(String str) {
         List<MyTweet> user = new ArrayList<MyTweet>();
@@ -117,13 +121,13 @@ public class MySearch extends AbstractElasticSearch {
         return search(new ArrayList(), request);
     }
 
-    public SearchResponse search(Collection<MyTweet> users, MyQuery request) {
+    public SearchResponse search(Collection<MyTweet> tweets, MyQuery request) {
         SearchResponse rsp = query(request);
         SearchHit[] docs = rsp.getHits().getHits();
         for (SearchHit sd : docs) {
 //            System.out.println(sd.getExplanation().toString());
-            MyTweet u = readDoc(sd.getSource(), sd.getId());
-            users.add(u);
+            MyTweet tw = readDoc(sd.getSource(), sd.getId());
+            tweets.add(tw);
         }
 
         return rsp;
