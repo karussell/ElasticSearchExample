@@ -12,9 +12,17 @@
     color: black;
     font-style: italic;
     font-size: 17px;    
-    padding: 15px 0px 10px 20px;
+    padding: 15px 0px 10px 20px;    
 }
 
+.jetwicklogo a {
+    text-decoration: none;
+}
+
+.search-tweet-tf { 
+    font-size: 18px;
+    height: 23px;
+}
 
 #resultslist {    
     padding-left: 0px;
@@ -74,7 +82,7 @@
 }
 
 .filter {
-    width: 145px;
+    width: 155px;
     margin-top: 0px;
     padding: 130px 15px 0px 10px;
 }
@@ -94,5 +102,17 @@
 
 .content {
     float: left;
+}
+
+.query-plus-button, .content {
     width: 330px;
+}
+#querybox {
+    width: 75%;    
+}
+#searchform-button {
+    font-size: 16px;
+    border: medium medium;
+    height: 28px;
+    width: 72px;    
 }

@@ -55,12 +55,13 @@ public class Feeding {
         else
             tweets = createReal();
 
+        logger.info("Now feeding");
         StopWatch sw = new StopWatch().start();
         tws.bulkUpdate(tweets, tws.getIndexName());
         long time = sw.stop().totalTime().seconds();
         if (time == 0)
             time = 1;
-        System.out.println("Feeded " + tweets.size() + " users => " + tweets.size() / time + " users/sec");
+        logger.info("Feeded " + tweets.size() + " users => " + tweets.size() / time + " users/sec");
     }
 
     String createRandomWord(int chars) {
@@ -87,15 +88,19 @@ public class Feeding {
     public Collection<MyTweet> createReal() {
         List<MyTweet> tweets = new ArrayList<MyTweet>();
         try {
+            // get some tweets about java
             Twitter twitter4j = new TwitterFactory().getInstance();
-            Query q = new Query("java");
-            q.setRpp(100);
-            for (Tweet tw : twitter4j.search(q).getTweets()) {
-                MyTweet myTw = new MyTweet(tw.getId(), tw.getFromUser());
-                myTw.setText(tw.getText());
-                myTw.setCreatedAt(tw.getCreatedAt());
-                myTw.setFromUserId(tw.getFromUserId());
-                tweets.add(myTw);
+            for (int i = 0; i < 3; i++) {
+                Query q = new Query("java");
+                q.setRpp(100);
+                for (Tweet tw : twitter4j.search(q).getTweets()) {
+                    MyTweet myTw = new MyTweet(tw.getId(), tw.getFromUser());
+                    myTw.setText(tw.getText());
+                    myTw.setCreatedAt(tw.getCreatedAt());
+                    myTw.setFromUserId(tw.getFromUserId());
+                    tweets.add(myTw);
+                }
+                Thread.sleep(1000);
             }
         } catch (Exception ex) {
             logger.error("Error while grabbing tweets from twitter!", ex);

@@ -188,7 +188,7 @@ public class HomePage extends WebPage {
         if (totalHits > 0) {
             float time = (System.currentTimeMillis() - start) / 100.0f;
             time = Math.round(time) / 10f;
-            msg = "Found " + totalHits + " users in " + time + " s";
+            msg = "Found " + totalHits + " tweets in " + time + " s";
         } else {
             if (tweets.isEmpty()) {
                 if (!msg.isEmpty())
