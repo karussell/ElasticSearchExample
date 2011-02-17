@@ -33,10 +33,10 @@ import java.util.LinkedHashSet;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.xcontent.QueryBuilders;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 /**
  *
@@ -141,7 +141,7 @@ public class MyQuery implements Serializable {
 
     public static String toString(ToXContent tmp) {
         try {
-            XContentBuilder builder = jsonBuilder();
+            XContentBuilder builder = JsonXContent.unCachedContentBuilder();
             tmp.toXContent(builder, ToXContent.EMPTY_PARAMS);
             return builder.prettyPrint().string();
         } catch (Exception ex) {

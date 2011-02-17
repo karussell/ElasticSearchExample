@@ -31,10 +31,10 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 /**
  * Provides search functionality via elasticsearch.
@@ -78,7 +78,7 @@ public class MySearch extends AbstractElasticSearch {
 
     public XContentBuilder createDoc(MyTweet u) {
         try {
-            XContentBuilder b = jsonBuilder().startObject();
+            XContentBuilder b = JsonXContent.unCachedContentBuilder().startObject();
             b.field(TWEET_TXT, u.getText());
             b.field("fromUserId", u.getFromUserId());
             if (u.getCreatedAt() != null)
